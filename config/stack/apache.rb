@@ -28,8 +28,13 @@ package :passenger, :provides => :appserver do
     post :install, 'apt-get install -y libcurl4-gnutls-dev' # Compilation dependency for apache module
     post :install, 'echo -en "\n\n\n\n" | sudo passenger-install-apache2-module'
 
-    # Create the passenger conf file
+    # SET UP CONFIG FILE
+    # set up directory
     post :install, 'mkdir -p /etc/apache2/extras'
+    # move old file out of the way
+    post :install, 'rm -rf /etc/apache2/extras/passenger.conf.moved_by_sprinkle'
+    post :install, 'mv /etc/apache2/extras/passenger.conf /etc/apache2/extras/passenger.conf.moved_by_sprinkle'
+    # recreate file
     post :install, 'touch /etc/apache2/extras/passenger.conf'
     post :install, 'echo "Include /etc/apache2/extras/passenger.conf"|sudo tee -a /etc/apache2/apache2.conf'
 
