@@ -23,7 +23,7 @@ package :passenger, :provides => :appserver do
   binaries = %w(passenger-config passenger-install-nginx-module passenger-install-apache2-module passenger-make-enterprisey passenger-memory-stats passenger-spawn-server passenger-status passenger-stress-test)
   
   gem 'passenger', :version => version do
-    binaries.each {|bin| post :install, "ln -s #{REE_PATH}/bin/#{bin} /usr/local/bin/#{bin}"}
+    binaries.each {|bin| post :install, "ln -s -f #{REE_PATH}/bin/#{bin} /usr/local/bin/#{bin}"} # The -f forces the operation, so it doesn't fail the second time you run it.
     
     post :install, 'echo -en "\n\n\n\n" | sudo passenger-install-apache2-module'
 
