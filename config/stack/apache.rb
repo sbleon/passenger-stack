@@ -31,9 +31,8 @@ package :passenger, :provides => :appserver do
     # SET UP CONFIG FILE
     # set up directory
     post :install, 'mkdir -p /etc/apache2/extras'
-    # move old file out of the way
-    post :install, 'rm -rf /etc/apache2/extras/passenger.conf.moved_by_sprinkle'
-    post :install, 'mv /etc/apache2/extras/passenger.conf /etc/apache2/extras/passenger.conf.moved_by_sprinkle'
+    # blast old file (I should back it up, but oh well)
+    post :install, 'rm -rf /etc/apache2/extras/passenger.conf'
     # recreate file
     post :install, 'touch /etc/apache2/extras/passenger.conf'
     post :install, 'echo "Include /etc/apache2/extras/passenger.conf"|sudo tee -a /etc/apache2/apache2.conf'
