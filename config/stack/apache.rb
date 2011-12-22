@@ -19,7 +19,7 @@ end
 
 package :passenger, :provides => :appserver do
   description 'Phusion Passenger (mod_rails)'
-  version '2.2.4'
+  version '3.0.11' # I don't think this version is necessarily installed, as I had to update this the version of passenger it had gotten me.
   binaries = %w(passenger-config passenger-install-nginx-module passenger-install-apache2-module passenger-make-enterprisey passenger-memory-stats passenger-spawn-server passenger-status passenger-stress-test)
   
   gem 'passenger', :version => version do
@@ -35,7 +35,6 @@ package :passenger, :provides => :appserver do
     post :install, 'rm -rf /etc/apache2/extras/passenger.conf'
     # recreate file
     post :install, 'touch /etc/apache2/extras/passenger.conf'
-    post :install, 'echo "Include /etc/apache2/extras/passenger.conf"|sudo tee -a /etc/apache2/apache2.conf'
 
     [%Q(LoadModule passenger_module /usr/local/ruby-enterprise/lib/ruby/gems/1.8/gems/passenger-#{version}/ext/apache2/mod_passenger.so),
     %Q(PassengerRoot /usr/local/ruby-enterprise/lib/ruby/gems/1.8/gems/passenger-#{version}),
@@ -44,6 +43,8 @@ package :passenger, :provides => :appserver do
       post :install, "echo '#{line}' |sudo tee -a /etc/apache2/extras/passenger.conf"
     end
 
+    # Tell apache to use new config file
+    post :install, 'echo "Include /etc/apache2/extras/passenger.conf"|sudo tee -a /etc/apache2/apache2.conf'
     # Restart apache to note changes
     post :install, '/etc/init.d/apache2 restart'
   end
