@@ -25,6 +25,7 @@ package :passenger, :provides => :appserver do
   gem 'passenger', :version => version do
     binaries.each {|bin| post :install, "ln -s -f #{REE_PATH}/bin/#{bin} /usr/local/bin/#{bin}"} # The -f forces the operation, so it doesn't fail the second time you run it.
     
+    post :install, 'apt-get install -y libcurl4-gnutls-dev' # Compilation dependency for apache module
     post :install, 'echo -en "\n\n\n\n" | sudo passenger-install-apache2-module'
 
     # Create the passenger conf file
