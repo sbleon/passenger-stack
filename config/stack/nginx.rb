@@ -31,7 +31,7 @@ package :passenger, :provides => :appserver do
   
   gem 'passenger', :version => version do    
     # Install nginx and the module
-    binaries.each {|bin| post :install, "ln -s #{REE_PATH}/bin/#{bin} /usr/local/bin/#{bin}"}
+    binaries.each {|bin| post :install, "ln -s #{RUBY_PATH}/bin/#{bin} /usr/local/bin/#{bin}"}
     post :install, "sudo passenger-install-nginx-module --auto --auto-download --prefix=/usr/local/nginx"
   end
   
@@ -39,6 +39,6 @@ package :passenger, :provides => :appserver do
   
   verify do
     has_gem "passenger", version
-    binaries.each {|bin| has_symlink "/usr/local/bin/#{bin}", "#{REE_PATH}/bin/#{bin}" }
+    binaries.each {|bin| has_symlink "/usr/local/bin/#{bin}", "#{RUBY_PATH}/bin/#{bin}" }
   end
 end

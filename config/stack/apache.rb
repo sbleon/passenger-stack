@@ -21,38 +21,47 @@ package :passenger, :provides => :appserver do
   description 'Phusion Passenger (mod_rails)'
   version '3.0.11' # I don't think this version is necessarily installed, as I had to update this the version of passenger it had gotten me.
   binaries = %w(passenger-config passenger-install-nginx-module passenger-install-apache2-module passenger-make-enterprisey passenger-memory-stats passenger-spawn-server passenger-status passenger-stress-test)
-  
+
+  passenger_config = '/etc/apache2/extras/passenger.conf'
+  passenger_gem_path = "#{RUBY_PATH}/lib/ruby/gems/1.8/gems/passenger-#{version}"
+  passenger_module = "#{passenger_gem_path}/ext/apache2/mod_passenger.so"
+
+  apt 'libcurl4-gnutls-dev' # Compilation dependency for apache module
+
   gem 'passenger', :version => version do
-    binaries.each {|bin| post :install, "ln -s -f #{REE_PATH}/bin/#{bin} /usr/local/bin/#{bin}"} # The -f forces the operation, so it doesn't fail the second time you run it.
+    binaries.each {|bin| post :install, "ln -s -f #{RUBY_PATH}/bin/#{bin} /usr/local/bin/#{bin}"} # The -f forces the operation, so it doesn't fail the second time you run it.
     
-    post :install, 'apt-get install -y libcurl4-gnutls-dev' # Compilation dependency for apache module
     post :install, 'echo -en "\n\n\n\n" | sudo passenger-install-apache2-module'
 
     # SET UP CONFIG FILE
     # set up directory
     post :install, 'mkdir -p /etc/apache2/extras'
     # blast old file (I should back it up, but oh well)
-    post :install, 'rm -rf /etc/apache2/extras/passenger.conf'
+    post :install, "rm -rf #{passenger_config}"
     # recreate file
-    post :install, 'touch /etc/apache2/extras/passenger.conf'
+    post :install, "touch #{passenger_config}"
 
-    [%Q(LoadModule passenger_module /usr/local/ruby-enterprise/lib/ruby/gems/1.8/gems/passenger-#{version}/ext/apache2/mod_passenger.so),
-    %Q(PassengerRoot /usr/local/ruby-enterprise/lib/ruby/gems/1.8/gems/passenger-#{version}),
+    [%Q(LoadModule passenger_module #{passenger_module}),
+    %Q(PassengerRoot #{passenger_gem_path}),
     %q(PassengerRuby /usr/local/bin/ruby),
     %q(RailsEnv production)].each do |line|
-      post :install, "echo '#{line}' |sudo tee -a /etc/apache2/extras/passenger.conf"
+      post :install, "echo '#{line}' |sudo tee -a #{passenger_config}"
     end
 
     # Tell apache to use new config file
-    post :install, 'echo "Include /etc/apache2/extras/passenger.conf"|sudo tee -a /etc/apache2/apache2.conf'
+    post :install, "echo 'Include #{passenger_config}'|sudo tee -a /etc/apache2/apache2.conf"
     # Restart apache to note changes
     post :install, '/etc/init.d/apache2 restart'
   end
 
   verify do
-    has_file "/etc/apache2/extras/passenger.conf"
-    has_file "/usr/local/ruby-enterprise/lib/ruby/gems/1.8/gems/passenger-#{version}/ext/apache2/mod_passenger.so"
-    binaries.each {|bin| has_symlink "/usr/local/bin/#{bin}", "#{REE_PATH}/bin/#{bin}" }
+    has_gem 'passenger', version
+    has_file passenger_config
+    has_file passenger_module
+    binaries.each {|bin| has_symlink "/usr/local/bin/#{bin}", "#{RUBY_PATH}/bin/#{bin}" }
+    # This should work, but on Ubuntu Lucid Lynx (10.04), apache2 doesn't start automatically
+    # and needs to be started manually.
+    #has_process "apache2"
   end
 
   requires :apache, :apache2_prefork_dev, :ruby_enterprise
