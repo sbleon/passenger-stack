@@ -1,4 +1,4 @@
-package :ruby_enterprise do
+package :ruby_enterprise, :provides => :ruby do
   description 'Ruby Enterprise Edition'
   version '1.8.7-2011.03'
   ree_path = "/opt/ruby-enterprise-#{version}"

@@ -64,7 +64,7 @@ package :passenger, :provides => :appserver do
     #has_process "apache2"
   end
 
-  requires :apache, :apache2_prefork_dev, :ruby_enterprise
+  requires :apache, :apache2_prefork_dev, :ruby
 end
 
 # These "installers" are strictly optional, I believe
