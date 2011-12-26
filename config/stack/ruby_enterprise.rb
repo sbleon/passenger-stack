@@ -5,12 +5,13 @@ package :ruby_enterprise, :provides => :ruby do
   # Other packages may reference this
   RUBY_PATH = ree_path
 
+  file_name = "ruby-enterprise-edition-#{version}_amd64.deb"
+
   binaries = %w(erb gem irb rackup rails rake rdoc ree-version ri ruby testrb)
-  # Apply patch to remove SSLv2 support, which is no longer present in Ubuntu 11.10 and OpenSSL >1.0
-  push_text File.read(File.join(File.dirname(__FILE__), 'ruby_enterprise', 'sslv2_patch')), "/tmp/sslv2_patch", :sudo => true
-  source "http://rubyenterpriseedition.googlecode.com/files/ruby-enterprise-#{version}.tar.gz" do
-    post :extract, "patch /usr/local/build/ruby-enterprise-1.8.7-2011.03/source/ext/openssl/ossl_ssl.c < /tmp/sslv2_patch"
-    custom_install "sudo ./installer --auto=#{ree_path} --dont-install-useful-gems --no-dev-docs"
+  noop do
+    pre :install, "curl http://dl.dropbox.com/u/3283085/Debian_Packages/oneiric/#{file_name} > /tmp/#{file_name}"
+    pre :install, "dpkg -i /tmp/#{file_name}"
+    post :install, "rm /tmp/#{file_name}"
     binaries.each {|bin| post :install, "ln -s #{ree_path}/bin/#{bin} /usr/local/bin/#{bin}" }
   end
 
@@ -24,6 +25,6 @@ package :ruby_enterprise, :provides => :ruby do
 end
 
 package :ree_dependencies do
-  apt %w(zlib1g-dev libreadline-dev libssl-dev)
+  apt %w(zlib1g-dev libreadline-dev libssl-dev curl)
   requires :build_essential
 end
