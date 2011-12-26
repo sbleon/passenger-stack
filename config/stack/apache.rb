@@ -57,9 +57,7 @@ package :passenger, :provides => :appserver do
     has_file passenger_config
     has_file passenger_module
     binaries.each {|bin| has_symlink "/usr/local/bin/#{bin}", "#{RUBY_PATH}/bin/#{bin}" }
-    # This should work, but on Ubuntu Lucid Lynx (10.04), apache2 doesn't start automatically
-    # and needs to be started manually.
-    #has_process "apache2"
+    has_process "apache2"
   end
 
   requires :apache, :apache2_prefork_dev, :ruby, :passenger_dependencies
