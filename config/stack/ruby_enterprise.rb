@@ -6,6 +6,7 @@ package :ruby_enterprise do
   RUBY_PATH = ree_path
 
   binaries = %w(erb gem irb rackup rails rake rdoc ree-version ri ruby testrb)
+  # Apply patch to remove SSLv2 support, which is no longer present in Ubuntu 11.10 and OpenSSL >1.0
   push_text File.read(File.join(File.dirname(__FILE__), 'ruby_enterprise', 'sslv2_patch')), "/tmp/sslv2_patch", :sudo => true
   source "http://rubyenterpriseedition.googlecode.com/files/ruby-enterprise-#{version}.tar.gz" do
     post :extract, "patch /usr/local/build/ruby-enterprise-1.8.7-2011.03/source/ext/openssl/ossl_ssl.c < /tmp/sslv2_patch"
