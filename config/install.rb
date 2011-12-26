@@ -1,7 +1,7 @@
 $:<< File.join(File.dirname(__FILE__), 'stack')
 
 # Require the stack base
-%w(essential scm ruby_enterprise memcached postgresql mysql).each do |lib|
+%w(essential git ruby_enterprise memcached postgresql mysql).each do |lib|
   require lib
 end
 
