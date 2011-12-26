@@ -26,8 +26,6 @@ package :passenger, :provides => :appserver do
   passenger_gem_path = "#{RUBY_PATH}/lib/ruby/gems/1.8/gems/passenger-#{version}"
   passenger_module = "#{passenger_gem_path}/ext/apache2/mod_passenger.so"
 
-  apt 'libcurl4-gnutls-dev' # Compilation dependency for apache module
-
   gem 'passenger', :version => version do
     binaries.each {|bin| post :install, "ln -s -f #{RUBY_PATH}/bin/#{bin} /usr/local/bin/#{bin}"} # The -f forces the operation, so it doesn't fail the second time you run it.
     
@@ -64,7 +62,11 @@ package :passenger, :provides => :appserver do
     #has_process "apache2"
   end
 
-  requires :apache, :apache2_prefork_dev, :ruby
+  requires :apache, :apache2_prefork_dev, :ruby, :passenger_dependencies
+end
+
+package :passenger_dependencies do
+  apt 'libcurl4-gnutls-dev' # Compilation dependency for apache module
 end
 
 # These "installers" are strictly optional, I believe
