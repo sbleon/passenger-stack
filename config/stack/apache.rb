@@ -5,6 +5,7 @@ package :apache, :provides => :webserver do
   end
 
   verify do
+    has_apt 'apache2'
     has_executable '/usr/sbin/apache2'
   end
 
@@ -15,6 +16,10 @@ end
 package :apache2_prefork_dev do
   description 'A dependency required by some packages.'
   apt 'apache2-prefork-dev'
+
+  verify do
+    has_apt 'apache2-prefork-dev'
+  end
 end
 
 package :passenger, :provides => :appserver do
@@ -67,6 +72,10 @@ end
 
 package :passenger_dependencies do
   apt 'libcurl4-gnutls-dev' # Compilation dependency for apache module
+
+  verify do
+    has_apt 'libcurl4-gnutls-dev'
+  end
 end
 
 # These "installers" are strictly optional, I believe
