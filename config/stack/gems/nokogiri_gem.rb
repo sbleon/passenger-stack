@@ -12,5 +12,10 @@ end
 
 package :nokogiri_dependencies do
   requires :build_essential
-  apt %w(libxslt-dev libxml2-dev)
+  apt %w(libxslt1-dev libxml2-dev)
+
+  verify do
+    has_apt 'libxslt1-dev'
+    has_apt 'libxml2-dev'
+  end
 end
