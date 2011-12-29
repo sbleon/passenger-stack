@@ -27,4 +27,11 @@ end
 package :ree_dependencies do
   apt %w(zlib1g-dev libreadline-dev libssl-dev curl)
   requires :build_essential
+
+  verify do
+    has_apt 'zlib1g-dev'
+    has_apt 'libreadline-dev'
+    has_apt 'libssl-dev'
+    has_apt 'curl'
+  end
 end
