@@ -2,7 +2,7 @@ package :apache, :provides => :webserver do
   description 'Apache2 web server.'
   apt 'apache2 apache2.2-common apache2-mpm-prefork apache2-utils libexpat1 ssl-cert' do
     post :install, 'a2enmod rewrite' # Enable rewrite module
-    post :install, 'a2dissite default' # Disable default site
+    post :install, 'a2dissite default default-ssl' # Disable default sites
   end
 
   verify do
@@ -34,7 +34,6 @@ package :passenger, :provides => :appserver do
 
   gem 'passenger', :version => version do
     binaries.each {|bin| post :install, "ln -s -f #{RUBY_PATH}/bin/#{bin} /usr/local/bin/#{bin}"} # The -f forces the operation, so it doesn't fail the second time you run it.
-    
     post :install, 'echo -en "\n\n\n\n" | sudo passenger-install-apache2-module'
 
     # SET UP CONFIG FILE
@@ -70,12 +69,13 @@ package :passenger, :provides => :appserver do
 end
 
 package :passenger_dependencies do
-  apt 'libcurl4-gnutls-dev' # Compilation dependency for apache module
+  apt 'libcurl4-openssl-dev' # Compilation dependency for apache module
 
   verify do
-    has_apt 'libcurl4-gnutls-dev'
+    has_apt 'libcurl4-openssl-dev'
   end
 end
+
 
 # These "installers" are strictly optional, I believe
 # that everyone should be doing this to serve sites more quickly.
